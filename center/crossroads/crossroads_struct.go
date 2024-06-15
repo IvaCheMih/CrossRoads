@@ -70,7 +70,7 @@ func (c *CrossRoads) CollectInformationFromTLs() error {
 		if err != nil {
 			errChan <- err
 		}
-		c.TrafficLight_1.QuantityInQueue += num
+		c.TrafficLight_1.QuantityInQueue = num
 
 		wg.Done()
 	}()
@@ -81,7 +81,7 @@ func (c *CrossRoads) CollectInformationFromTLs() error {
 			errChan <- err
 		}
 
-		c.TrafficLight_2.QuantityInQueue += num
+		c.TrafficLight_2.QuantityInQueue = num
 		wg.Done()
 	}()
 
@@ -91,7 +91,7 @@ func (c *CrossRoads) CollectInformationFromTLs() error {
 			errChan <- err
 		}
 
-		c.TrafficLight_3.QuantityInQueue += num
+		c.TrafficLight_3.QuantityInQueue = num
 
 		wg.Done()
 	}()
@@ -102,7 +102,7 @@ func (c *CrossRoads) CollectInformationFromTLs() error {
 			errChan <- err
 		}
 
-		c.TrafficLight_4.QuantityInQueue += num
+		c.TrafficLight_4.QuantityInQueue = num
 
 		wg.Done()
 	}()
@@ -135,12 +135,38 @@ func (c *CrossRoads) collectInfoFromOne(url string, id int) (error, int) {
 }
 
 func (c *CrossRoads) FindOptimal() (int, []bool) {
+	time1 := 0
 
-	time1 := min(c.TrafficLight_1.QuantityInQueue, c.TrafficLight_3.QuantityInQueue)
+	if c.TrafficLight_1.QuantityInQueue != 0 {
 
-	time2 := min(c.TrafficLight_2.QuantityInQueue, c.TrafficLight_4.QuantityInQueue)
+		time1 = min(c.TrafficLight_1.QuantityInQueue, c.TrafficLight_3.QuantityInQueue)
+	}
+
+	time2 := 0
+
+	if c.TrafficLight_2.QuantityInQueue != 0 && c.TrafficLight_4.QuantityInQueue != 0 {
+		time2 = min(c.TrafficLight_2.QuantityInQueue, c.TrafficLight_4.QuantityInQueue)
+	}
 
 	times := max(time1, time2)
+
+	if times == 0 {
+		if c.TrafficLight_1.QuantityInQueue != 0 {
+			return c.TrafficLight_1.QuantityInQueue, []bool{true, false, false, false}
+		}
+
+		if c.TrafficLight_2.QuantityInQueue != 0 {
+			return c.TrafficLight_2.QuantityInQueue, []bool{false, true, false, false}
+		}
+
+		if c.TrafficLight_3.QuantityInQueue != 0 {
+			return c.TrafficLight_3.QuantityInQueue, []bool{false, false, true, false}
+		}
+
+		if c.TrafficLight_4.QuantityInQueue != 0 {
+			return c.TrafficLight_4.QuantityInQueue, []bool{false, false, false, true}
+		}
+	}
 
 	if times == time1 {
 		return times, []bool{true, false, true, false}
@@ -180,7 +206,7 @@ func (c *CrossRoads) Execute(times int, commands []bool) error {
 
 	wg.Wait()
 
-	c.dellFromQueue(times, commands)
+	//c.dellFromQueue(times, commands)
 
 	return er
 }
@@ -223,13 +249,13 @@ func (c *CrossRoads) sendOneCommand(i int, cmd bool, times int) error {
 	return nil
 }
 
-func (c *CrossRoads) dellFromQueue(times int, commands []bool) {
-	if commands[0] {
-		c.TrafficLight_1.QuantityInQueue -= times
-		c.TrafficLight_3.QuantityInQueue -= times
-	} else {
-		c.TrafficLight_2.QuantityInQueue -= times
-		c.TrafficLight_4.QuantityInQueue -= times
-	}
-
-}
+//func (c *CrossRoads) dellFromQueue(times int, commands []bool) {
+//	if commands[0] {
+//		c.TrafficLight_1.QuantityInQueue -= times
+//		c.TrafficLight_3.QuantityInQueue -= times
+//	} else {
+//		c.TrafficLight_2.QuantityInQueue -= times
+//		c.TrafficLight_4.QuantityInQueue -= times
+//	}
+//
+//}
