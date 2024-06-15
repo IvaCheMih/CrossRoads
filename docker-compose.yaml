@@ -1,0 +1,104 @@
+version: "3.7"
+
+services:
+  center:
+#    depends_on:
+#      tl_1:
+#        condition:  service_healthy
+#      tl_2:
+#        condition: service_healthy
+#      tl_3:
+#        condition: service_healthy
+#      tl_4:
+#        condition: service_healthy
+    build:
+      context: .
+      dockerfile: DockerfileCenter
+#    ports:
+#      - "8080:8080"
+    networks:
+      - infra
+    env_file: envs/.center.env
+
+  tl_1:
+#    healthcheck:
+#      test: "curl -f http://tl_1:8081"
+#      interval: 1s
+#      timeout: 1s
+#      retries: 10
+    build:
+      context: .
+      dockerfile: DockerfileTL
+#    ports:
+#      - "8081:8081"
+    networks:
+      - infra
+    env_file: envs/.tl_1.env
+
+  tl_2:
+#    healthcheck:
+#      test: "curl -f http://tl_2:8082"
+#      interval: 1s
+#      timeout: 1s
+#      retries: 10
+    build:
+      context: .
+      dockerfile: DockerfileTL
+#    ports:
+#      - "8082:8082"
+    networks:
+      - infra
+    env_file: envs/.tl_2.env
+
+  tl_3:
+#    healthcheck:
+#      test: "curl -f http://tl_3:8083"
+#      interval: 1s
+#      timeout: 1s
+#      retries: 10
+    build:
+      context: .
+      dockerfile: DockerfileTL
+#    ports:
+#      - "8083:8083"
+    networks:
+      - infra
+    env_file: envs/.tl_3.env
+
+  tl_4:
+#    healthcheck:
+#      test: "curl -f http://tl_4:8084"
+#      interval: 1s
+#      timeout: 1s
+#      retries: 10
+    build:
+      context: .
+      dockerfile: DockerfileTL
+#    ports:
+#      - "8084:8084"
+    networks:
+      - infra
+    env_file: envs/.tl_4.env
+
+  generator:
+#    depends_on:
+#      tl_1:
+#        condition: service_healthy
+#      tl_2:
+#        condition: service_healthy
+#      tl_3:
+#        condition: service_healthy
+#      tl_4:
+#        condition: service_healthy
+    build:
+      context: .
+      dockerfile: DockerfileGenerator
+    #  ports:
+    #    - "8080:8080"
+    networks:
+      - infra
+    env_file: envs/.generator.env
+
+networks:
+  infra:
+    driver: bridge

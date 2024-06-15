@@ -1,0 +1,21 @@
+FROM golang:1.22 AS builder
+
+WORKDIR /app
+
+ADD go.mod go.sum ./
+
+RUN go mod download
+
+COPY traffic_light/ ./traffic_light
+
+RUN CGO_ENABLED=0 GOOS=linux go build -o traffic_light ./traffic_light
+FROM scratch
+COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
+
+WORKDIR /app
+
+COPY --from=builder /app/traffic_light .
+
+EXPOSE 8080
+
+CMD [ "./traffic_light" ]
